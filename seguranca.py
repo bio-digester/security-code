@@ -14,7 +14,7 @@ def error_log(message, command):
     sys.exit()
 
 if __name__ == "__main__":
-    HOST, PORT = "0.0.0.0", 7000
+    HOST, PORT = "0.0.0.0", int(sys.argv[1])
     MAX_TIME =  10 # 60 segundos vezes 10 = 10 minutos
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind((HOST, PORT))
