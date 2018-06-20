@@ -1,12 +1,17 @@
 import time
 import datetime
 import socket
+import os
+import subprocess
+import sys
 
-def error_log(message):
+def error_log(message, command):
     error = message + ' error at ' + str(datetime.datetime.now()) + '\n'
     log = open('error.log', 'a')
     log.write(error)
     log.close()
+    process = subprocess.Popen(command.split(), stdout = subprocess.PIPE)
+    sys.exit()
 
 if __name__ == "__main__":
     HOST, PORT = "0.0.0.0", 7000
@@ -22,6 +27,8 @@ if __name__ == "__main__":
     last_pulse_water = time.time()
     
     msg = None
+    command = "shutdown -r now"
+
     while True:
         try:
             sock.setblocking(0)
@@ -57,12 +64,12 @@ if __name__ == "__main__":
         print("-----------------------------")
         
         if(past_pulse_temperature >= MAX_TIME):
-            error_log('RESISTENCE')
+            error_log('RESISTENCE', command)
         if(past_pulse_pressure >= MAX_TIME):
-            error_log('PRESSURE')
+            error_log('PRESSURE', command)
         if(past_pulse_gas >= MAX_TIME):
-            error_log('GAS')
+            error_log('GAS', command)
         if(past_pulse_server >= MAX_TIME):
-            error_log('SERVER')
+            error_log('SERVER', command)
         if(past_pulse_water >= MAX_TIME):
-            error_log('WATER')
+            error_log('WATER', command)
