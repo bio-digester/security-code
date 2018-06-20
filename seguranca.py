@@ -20,12 +20,12 @@ if __name__ == "__main__":
     sock.bind((HOST, PORT))
     sock.listen(10)
     
-    last_pulse_temperature = time.time()
-    last_pulse_pressure = time.time()
-    last_pulse_gas = time.time()
-    last_pulse_server = time.time()
-    last_pulse_water = time.time()
-    
+    last_pulse_temperature = int(time.time())
+    last_pulse_pressure = int(time.time())
+    last_pulse_gas = int(time.time())
+    last_pulse_server = int(time.time())
+    last_pulse_water = int(time.time())
+
     msg = None
     command = "shutdown -r now"
 
@@ -36,24 +36,25 @@ if __name__ == "__main__":
             msg = conn.recv(1024)
         except IOError as e:  # and here it is handeled
             pass
-            
+        
         if(msg):
             if "TEMPERATURE" in str(msg):
-                last_pulse_temperature = time.time()
+                last_pulse_temperature = int(time.time())
             if "PRESSURE" in str(msg):
-                last_pulse_pressure = time.time()
+                last_pulse_pressure = int(time.time())
             if "GAS" in str(msg):
-                last_pulse_gas = time.time()
+                last_pulse_gas = int(time.time())
             if "SERVER" in str(msg):                
-                last_pulse_server = time.time()
+                last_pulse_server = int(time.time())
             if "WATER" in str(msg):
-                last_pulse_water = time.time()
-
-        past_pulse_temperature = time.time() - last_pulse_temperature
-        past_pulse_pressure = time.time() - last_pulse_pressure
-        past_pulse_gas = time.time() - last_pulse_gas
-        past_pulse_server = time.time() - last_pulse_server
-        past_pulse_water = time.time() - last_pulse_water
+                last_pulse_water = int(time.time())
+            msg = None
+      
+        past_pulse_temperature = int(time.time()) - last_pulse_temperature
+        past_pulse_pressure = int(time.time()) - last_pulse_pressure
+        past_pulse_gas = int(time.time()) - last_pulse_gas
+        past_pulse_server = int(time.time()) - last_pulse_server
+        past_pulse_water = int(time.time()) - last_pulse_water
         
         print("-----------------------------")  
         print("Temperatura: " + str(past_pulse_temperature))
