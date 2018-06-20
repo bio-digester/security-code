@@ -10,7 +10,7 @@ def error_log(message):
 
 if __name__ == "__main__":
     HOST, PORT = "0.0.0.0", 7000
-    MAX_TIME =  60 * 10 # 60 segundos vezes 10 = 10 minutos
+    MAX_TIME =  10 # 60 segundos vezes 10 = 10 minutos
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind((HOST, PORT))
     sock.listen(10)
@@ -21,22 +21,15 @@ if __name__ == "__main__":
     last_pulse_server = time.time()
     last_pulse_water = time.time()
     
-    
+    msg = None
     while True:
-        conn, addr = sock.accept()
-        sock.setblocking(False)
-
         try:
+            sock.setblocking(0)
+            conn, addr = sock.accept()
             msg = conn.recv(1024)
         except IOError as e:  # and here it is handeled
-            if e.errno == errno.EWOULDBLOCK:
-                print("passou no if")
-                pass
-            else:
-                print("passou no else")
-                pass
-        
-
+            pass
+            
         if(msg):
             if "TEMPERATURE" in str(msg):
                 last_pulse_temperature = time.time()
