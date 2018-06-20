@@ -1,57 +1,63 @@
 import time
+import datetime
 import socket
 
+def error_log(message):
+    error = message + ' error at ' + str(datetime.datetime.now()) + '\n'
+    log = open('error.log', 'a')
+    log.write(error)
+    log.close()
+
 if __name__ == "__main__":
-	HOST, PORT = "0.0.0.0", 7000
-	MAX_TIME = 60 * 10 # 60 segundos vezes 10 = 10 minutos
-	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	sock.bind((HOST, PORT))
-	sock.listen()
+    HOST, PORT = "0.0.0.0", 7000
+    MAX_TIME =  10 # 60 segundos vezes 10 = 10 minutos
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind((HOST, PORT))
+    sock.listen(10)
+    
+    last_pulse_temperature = time.time()
+    last_pulse_pressure = time.time()
+    last_pulse_gas = time.time()
+    last_pulse_server = time.time()
+    last_pulse_water = time.time()
+    
+    
+    while True:
+        conn, addr = sock.accept()
+        msg = conn.recv(1024)
+        if(msg):
+            if "TEMPERATURE" in str(msg):
+                last_pulse_temperature = time.time()
+            if "PRESSURE" in str(msg):
+                last_pulse_pressure = time.time()
+            if "GAS" in str(msg):
+                last_pulse_gas = time.time()
+            if "SERVER" in str(msg):				
+                last_pulse_server = time.time()
+            if "WATER" in str(msg):
+                last_pulse_water = time.time()
 
-	ultima_mensagem_temperatura = time.time()
-	ultima_mensagem_pressao = time.time()
-	ultima_mensagem_nivel = time.time()
-	ultima_mensagem_servidor = time.time()
-	ultima_mensagem_agua = time.time()
-
-	conn, addr = sock.accept()
-
-	while True:
-		msg = conn.recv(1024)
-		if (msg):
-			if "temperatura" in str(msg):
-				ultima_mensagem_temperatura = time.time()
-			if "pressao" in str(msg):
-				ultima_mensagem_pressao = time.time()
-			if "nivel" in str(msg):
-				ultima_mensagem_nivel = time.time()
-			if "servidor" in str(msg):				
-				ultima_mensagem_servidor = time.time()
-			if "agua" in str(msg):
-				ultima_mensagem_agua = time.time()
-
-
-		tempo_passado_temperatura = time.time() - ultima_mensagem_temperatura
-		tempo_passado_pressao = time.time() - ultima_mensagem_pressao
-		tempo_passado_nivel = time.time() - ultima_mensagem_nivel
-		tempo_passado_servidor = time.time() - ultima_mensagem_servidor
-		tempo_passado_agua = time.time() - ultima_mensagem_agua
-		
-		print("-----------------------------")	
-		print("Temperatura: " + str(tempo_passado_temperatura))
-		print("Pressão: " + str(tempo_passado_pressao))
-		print("Nível: " + str(tempo_passado_nivel))
-		print("Servidor: " + str(tempo_passado_servidor))
-		print("Água: " + str(tempo_passado_agua))
-		print("-----------------------------")
-
-		if(tempo_passado_temperatura >= MAX_TIME):
-			print("Tempo de temperatura foi atingido")
-		if(tempo_passado_pressao >= MAX_TIME):
-			print("Tempo de pressão foi atingido")
-		if(tempo_passado_nivel >= MAX_TIME):
-			print("Tempo de nível foi atingido")
-		if(tempo_passado_servidor >= MAX_TIME):
-			print("Tempo de servidor foi atingido")
-		if(tempo_passado_agua >= MAX_TIME):
-			print("Tempo de água foi atingido")
+    past_pulse_temperature = time.time() - last_pulse_temperature
+    past_pulse_pressure = time.time() - last_pulse_pressure
+    past_pulse_gas = time.time() - last_pulse_gas
+    past_pulse_server = time.time() - last_pulse_server
+    past_pulse_water = time.time() - last_pulse_water
+    
+    print("-----------------------------")	
+    print("Temperatura: " + str(past_pulse_temperature))
+    print("Pressão: " + str(past_pulse_pressure))
+    print("Nível: " + str(past_pulse_gas))
+    print("Servidor: " + str(past_pulse_server))
+    print("Água: " + str(past_pulse_water))
+    print("-----------------------------")
+    
+    if(past_pulse_temperature >= MAX_TIME):
+        error_log('RESISTENCE')
+    if(past_pulse_pressure >= MAX_TIME):
+        error_log('PRESSURE')
+    if(past_pulse_gas >= MAX_TIME):
+        error_log('GAS')
+    if(past_pulse_server >= MAX_TIME):
+        error_log('SERVER')
+    if(past_pulse_water >= MAX_TIME):
+        error_log('WATER')
